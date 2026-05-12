@@ -113,12 +113,65 @@ public class Model extends Observable {
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
-
+        board.setViewingPerspective(side);
+        for (int col=0;col<this.board.size();col++){
+            if(ProcessCol(board, col)){
+                changed=true;
+            }
+        }
+        board.setViewingPerspective(Side.NORTH);
         checkGameOver();
         if (changed) {
             setChanged();
         }
         return changed;
+    }
+
+    private boolean AboveIsEmpty(Board b,int i,int j){
+        if(j+1>=b.size()){
+            return false;
+        }
+        return EmptyTile(b.tile(i, j+1));
+    }
+    private boolean AboveIsEqual(Board b, int col, int j, Tile t){
+    if (j + 1 >= b.size()) return false;
+    if (EmptyTile(b.tile(col, j + 1))) return false;
+    // 直接用 t.value() 和上方的格子比较！
+    return t.value() == b.tile(col, j + 1).value(); 
+    }
+
+    private boolean EmptyTile(Tile t){
+        if(t==null){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    private boolean ProcessCol(Board b,int col){
+        boolean colChanged = false; 
+        int limit = b.size(); // 初始状态，所有位置都可以合并
+        for(int i=b.size()-2;i>=0;i--){//不需要判断最高行
+        Tile t=b.tile(col, i);
+        if (!EmptyTile(t)){
+            int j=i;
+            while (j<b.size()&&AboveIsEmpty(b,col,j)) {//试图找到本位置上方第一个非空值的位置,随后进行判断
+               j++; 
+            }
+            if(j + 1 < limit&&AboveIsEqual(b, col, j,t)){
+                b.move(col,j+1,t);
+                score+=b.tile(col, j+1).value();//更新分数
+                colChanged=true;
+                limit=j+1;//更新合并限制的天花板从而使得不会发生多次合并
+            }
+            else if(j!=i){//只有发生真正滑动时才改变
+                b.move(col, j, t);
+                colChanged=true;
+            }
+        }
+       }
+       return colChanged; 
     }
 
     /** Checks if the game is over and sets the gameOver variable
@@ -137,7 +190,13 @@ public class Model extends Observable {
      *  Empty spaces are stored as null.
      * */
     public static boolean emptySpaceExists(Board b) {
-        // TODO: Fill in this function.
+        for(int i=0;i<b.size();i++){
+            for(int j=0;j<b.size();j++){
+                if (b.tile(i, j) == null){
+                    return true;
+                }   
+            }
+        }
         return false;
     }
 
@@ -147,7 +206,13 @@ public class Model extends Observable {
      * given a Tile object t, we get its value with t.value().
      */
     public static boolean maxTileExists(Board b) {
-        // TODO: Fill in this function.
+        for(int i=0;i<b.size();i++){
+            for(int j=0;j<b.size();j++){
+                if (b.tile(i, j)!=null && b.tile(i, j).value() == MAX_PIECE){
+                    return true;
+                }   
+            }
+        }
         return false;
     }
 
@@ -158,7 +223,19 @@ public class Model extends Observable {
      * 2. There are two adjacent tiles with the same value.
      */
     public static boolean atLeastOneMoveExists(Board b) {
-        // TODO: Fill in this function.
+        if(emptySpaceExists(b)){
+            return true;
+        }
+        for(int i=0;i<b.size();i++){
+            for(int j=0;j<b.size();j++){
+                if (j+1<b.size() && b.tile(i, j).value() == b.tile(i,j+1).value()){
+                    return true;
+                }  
+                if (i+1<b.size() && b.tile(i, j).value() == b.tile(i+1,j).value()){
+                    return true;
+                }   
+            }
+        }
         return false;
     }
 
