@@ -37,13 +37,13 @@ public class TestBuggyAList {
                 int randVal = StdRandom.uniform(0, 100);
                 L.addLast(randVal);
                 B.addLast(randVal);
-                System.out.println("addLast(" + randVal + ")");
+                //System.out.println("addLast(" + randVal + ")");
             } else if (operationNumber == 1) {
                 // size
                 int sizeL = L.size();
                 int sizeB = B.size();
                 assertEquals(sizeL, sizeB);
-                System.out.println("size: " + sizeL + "," + sizeB);
+                //System.out.println("size: " + sizeL + "," + sizeB);
             }else if (operationNumber == 2) {
                 int size = L.size();
                 if(size == 0){
@@ -52,7 +52,7 @@ public class TestBuggyAList {
                 int last1 =L.getLast();
                 int last2 =B.getLast();
                 assertEquals(last1,last2);
-                System.out.println("last: " + last1 +  ", " + last2);
+                //System.out.println("last: " + last1 +  ", " + last2);
             } else if (operationNumber == 3) {
                 int size = L.size();
                 if(size == 0){
@@ -61,7 +61,7 @@ public class TestBuggyAList {
                 int remL =L.removeLast();
                 int remB =B.removeLast();
                 assertEquals(remL,remB);
-                System.out.println("removeLast(" + remL + ")");
+                //System.out.println("removeLast(" + remL + ")");
             }
         }
     }
